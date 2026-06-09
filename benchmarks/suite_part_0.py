@@ -14,3 +14,7 @@ def bench_task_4():
 # Evaluation benchmark test case revision 2026-06-07 - Step 6
 def bench_task_6():
     pass
+
+# Evaluation benchmark test case revision 2026-06-09 - Step 8
+def bench_task_8():
+    pass
