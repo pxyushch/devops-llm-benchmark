@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "devops-llm-benchmark"
+version = "0.1.0"
+description = "Deterministic evaluation benchmark for frontier LLMs on DevOps, Cloud, and CI/CD tasks"
+authors = [{ name = "Piyush Chauhan", email = "peeyushrajput321@gmail.com" }]
+license = { text = "Apache-2.0" }
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "pydantic>=2.5.0",
+    "docker>=7.0.0",
+    "pyyaml>=6.0.1",
+    "rich>=13.7.0",
+    "pytest>=8.0.0"
+]
+
+[project.scripts]
+devops-bench = "devops_bench.cli:main"
