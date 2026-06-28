@@ -10,3 +10,7 @@ def bench_task_23():
 # Evaluation benchmark test case revision 2026-06-26 - Step 25
 def bench_task_25():
     pass
+
+# Evaluation benchmark test case revision 2026-06-28 - Step 27
+def bench_task_27():
+    pass
