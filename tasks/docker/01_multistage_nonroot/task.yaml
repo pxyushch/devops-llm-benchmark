@@ -1,0 +1,12 @@
+task_id: "docker-01-multistage-nonroot"
+domain: "docker"
+difficulty: "hard"
+timeout_seconds: 90
+prompt: |
+  Write a production-grade multi-stage Dockerfile for a Python FastAPI service.
+  Requirements:
+  1. Use python:3.11-slim as builder and final image.
+  2. Implement non-root user 'appuser' with UID 10001.
+  3. Ensure final image contains no build-essential or compiler artifacts.
+  4. Expose port 8000 and configure a robust HEALTHCHECK.
+  5. Use dumb-init or gunicorn as PID 1 supervisor.
