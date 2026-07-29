@@ -1,0 +1,9 @@
+task_id: "k8s-01-hpa-networkpolicy"
+domain: "kubernetes"
+difficulty: "hard"
+timeout_seconds: 120
+prompt: |
+  Author a complete Kubernetes manifest bundle for an e-commerce checkout microservice:
+  1. Deployment with resource requests/limits, readiness/liveness probes, securityContext.
+  2. HorizontalPodAutoscaler (HPA v2) scaling from 3 to 15 pods based on 70% CPU and 80% Memory.
+  3. Default-deny Ingress NetworkPolicy allowing ingress traffic exclusively from the 'frontend' namespace on TCP 8080.
