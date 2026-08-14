@@ -1,0 +1,10 @@
+task_id: "tf-01-gcp-vpc-compute"
+domain: "terraform"
+difficulty: "hard"
+timeout_seconds: 120
+prompt: |
+  Write Terraform HCL code to provision secure Google Cloud Platform infrastructure:
+  1. A custom VPC network ('prod-vpc') with auto_create_subnetworks = false.
+  2. Two private subnets across us-central1 and us-east1 with Private Google Access enabled.
+  3. Cloud NAT gateway configured for outbound egress without public IPs.
+  4. Firewall rule denying all ingress except SSH from a specific bastion IP range.
