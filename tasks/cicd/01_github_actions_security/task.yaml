@@ -1,0 +1,10 @@
+task_id: "cicd-01-actions-security"
+domain: "cicd"
+difficulty: "medium"
+timeout_seconds: 90
+prompt: |
+  Author a GitHub Actions CI workflow (.github/workflows/ci.yml) that executes:
+  1. Matrix strategy testing across Python 3.10, 3.11, and 3.12.
+  2. Security linting with Bandit and container scanning with Trivy.
+  3. Automatic release artifact packaging on semantic version tags only.
+  4. Least-privilege permissions: block with 'contents: read'.
