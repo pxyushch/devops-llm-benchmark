@@ -1,7 +1,7 @@
-from dataclasses import dataclass, asdict
-from typing import List, Dict, Any
 import time
-import json
+from dataclasses import dataclass
+from typing import Any, Dict, List
+
 
 @dataclass
 class MetricPoint:

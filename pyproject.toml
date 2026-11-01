@@ -24,3 +24,11 @@ devops-bench = "devops_bench.cli:main"
 
 [tool.setuptools.packages.find]
 include = ["devops_bench*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B"]
+ignore = ["E701", "E702"]

@@ -28,7 +28,8 @@ def cmd_validate(args) -> int:
         res = {n: score_checks(t.task_id, n, chk(t.solution(n))) for n in ("good", "bad", "null")}
         ok = res["good"].passed and res["good"].score == 1.0 and not res["bad"].passed and res["null"].score == 0.0
         bad_tasks += not ok
-        print(f"{'OK  ' if ok else 'FAIL'} {t.task_id:32} good={res['good'].score} bad={res['bad'].score} null={res['null'].score}")
+        scores = f"good={res['good'].score} bad={res['bad'].score} null={res['null'].score}"
+        print(f"{'OK  ' if ok else 'FAIL'} {t.task_id:32} {scores}")
     return 1 if bad_tasks else 0
 
 
@@ -57,7 +58,8 @@ def cmd_run(args) -> int:
                 }
                 f.write(json.dumps(rec) + "\n")
                 f.flush()
-                print(f"{t.task_id:32} {args.model:7} epoch={epoch} pass={res.passed} score={res.score} failed={res.failed_checks}")
+                print(f"{t.task_id:32} {args.model:7} epoch={epoch} pass={res.passed} "
+                      f"score={res.score} failed={res.failed_checks}")
     return 0
 
 
