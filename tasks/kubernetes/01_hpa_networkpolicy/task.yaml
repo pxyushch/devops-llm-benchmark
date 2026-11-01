@@ -10,3 +10,4 @@ prompt: |
 artifact_type: "yaml"
 created: "2026-06-01"
 split: "dev"
+linters: ["kube-score"]

@@ -4,7 +4,6 @@ metadata:
   name: checkout
   namespace: shop
 spec:
-  replicas: 3
   selector:
     matchLabels: {app: checkout}
   template:
@@ -26,6 +25,8 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
+            runAsUser: 10001
+            runAsGroup: 10001
 ---
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler

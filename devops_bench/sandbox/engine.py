@@ -29,7 +29,8 @@ class SandboxExecutionEngine:
         self.network = network
 
     def run(self, cmd: list[str], files: Optional[Dict[str, str]] = None, timeout: int = 60) -> Dict[str, Any]:
-        """Run `cmd` in a fresh container. `files` ({relative path: content}) appear read-only under /work."""
+        """Run `cmd` in a fresh container (cmd[0] overrides the image entrypoint).
+        `files` ({relative path: content}) appear read-only under /work."""
         name = f"devops-bench-{next(tempfile._get_candidate_names())}"
         with tempfile.TemporaryDirectory() as tmp:
             for rel, content in (files or {}).items():
@@ -38,6 +39,10 @@ class SandboxExecutionEngine:
                     raise ValueError(f"unsafe path: {rel}")
                 p.parent.mkdir(parents=True, exist_ok=True)
                 p.write_text(content)
+                p.chmod(0o644)
+            # The container runs as an unprivileged uid; the mount is read-only so world-readable is safe.
+            for d in [Path(tmp), *(x for x in Path(tmp).rglob("*") if x.is_dir())]:
+                d.chmod(0o755)
             docker_cmd = [
                 "docker", "run", "--rm", "--name", name,
                 "--network", "bridge" if self.network else "none",
@@ -46,7 +51,7 @@ class SandboxExecutionEngine:
                 "--user", "65534:65534",
                 "--memory", self.memory, "--cpus", self.cpus, "--pids-limit", str(self.pids),
                 "-v", f"{tmp}:/work:ro", "-w", "/work",
-                self.image, *cmd,
+                "--entrypoint", cmd[0], self.image, *cmd[1:],
             ]
             try:
                 res = subprocess.run(docker_cmd, capture_output=True, text=True, timeout=timeout)

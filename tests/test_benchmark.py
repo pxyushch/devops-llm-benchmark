@@ -3,8 +3,10 @@ import pytest
 from devops_bench.core.checks import Category, Check
 from devops_bench.core.extract import extract_artifact
 from devops_bench.core.task import load_tasks
+from devops_bench.evaluate import evaluate
 from devops_bench.rubrics.scorer import score_checks
 from devops_bench.rubrics.taxonomy import FAILURE_TAXONOMY
+from devops_bench.sandbox.engine import docker_available
 
 TASKS = load_tasks()
 
@@ -44,11 +46,13 @@ def test_tasks_loaded():
     assert len(TASKS) >= 4
 
 
+@pytest.mark.parametrize("lint", [False, True], ids=["static", "linted"])
 @pytest.mark.parametrize("task", TASKS, ids=lambda t: t.task_id)
-def test_task_validation(task):
-    """Every task: good scores 1.0 and passes, bad fails, null scores 0."""
-    chk = task.load_checker()
-    good, bad, null = (score_checks(task.task_id, n, chk(task.solution(n))) for n in ("good", "bad", "null"))
+def test_task_validation(task, lint):
+    """Every task: good scores 1.0 and passes, bad fails, null scores 0 (with and without linters)."""
+    if lint and not docker_available():
+        pytest.skip("docker daemon not available")
+    good, bad, null = (evaluate(task, task.solution(n), n, lint) for n in ("good", "bad", "null"))
     assert good.passed and good.score == 1.0, good.failed_checks
     assert not bad.passed
     assert null.score == 0.0

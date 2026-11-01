@@ -22,6 +22,7 @@ class Task(BaseModel):
     artifact_type: str = "text"  # dockerfile | yaml | hcl | text
     created: str | None = None  # ISO date, used for contamination slicing
     split: str = "dev"  # dev | heldout
+    linters: list[str] = Field(default_factory=list)  # names in devops_bench.linters.LINTERS
     task_dir: Path = Field(exclude=True)
 
     def load_checker(self) -> Callable[[str], list[Check]]:

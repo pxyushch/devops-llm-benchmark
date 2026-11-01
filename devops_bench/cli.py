@@ -9,9 +9,10 @@ from pathlib import Path
 
 from devops_bench.core.extract import extract_artifact
 from devops_bench.core.task import DEFAULT_TASK_ROOT, load_tasks
-from devops_bench.rubrics.scorer import score_checks
+from devops_bench.evaluate import evaluate
+from devops_bench.sandbox.engine import docker_available
 
-PROTOCOL_VERSION = "0.1"
+PROTOCOL_VERSION = "0.2"  # 0.2: sandboxed linters (pinned digests) added to scoring
 
 
 def cmd_list(args) -> int:
@@ -20,12 +21,21 @@ def cmd_list(args) -> int:
     return 0
 
 
+def _lint_enabled(args, tasks) -> bool:
+    if args.no_lint:
+        return False
+    if any(t.linters for t in tasks) and not docker_available():
+        sys.exit("error: docker daemon not available but tasks require linters (use --no-lint to skip; "
+                 "results will not be comparable)")
+    return True
+
+
 def cmd_validate(args) -> int:
     """Task QA: good solution must pass, bad must fail, null must score 0."""
     bad_tasks = 0
+    lint = _lint_enabled(args, load_tasks(Path(args.tasks)))
     for t in load_tasks(Path(args.tasks)):
-        chk = t.load_checker()
-        res = {n: score_checks(t.task_id, n, chk(t.solution(n))) for n in ("good", "bad", "null")}
+        res = {n: evaluate(t, t.solution(n), n, lint) for n in ("good", "bad", "null")}
         ok = res["good"].passed and res["good"].score == 1.0 and not res["bad"].passed and res["null"].score == 0.0
         bad_tasks += not ok
         scores = f"good={res['good'].score} bad={res['bad'].score} null={res['null'].score}"
@@ -40,15 +50,15 @@ def cmd_run(args) -> int:
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     tasks = [t for t in load_tasks(Path(args.tasks)) if not args.task or t.task_id in args.task]
+    lint = _lint_enabled(args, tasks)
     with out_path.open("a") as f:
         for t in tasks:
-            chk = t.load_checker()
             for epoch in range(args.epochs):
                 gen = runner.generate(t.prompt)
                 artifact = extract_artifact(gen.text)
-                res = score_checks(t.task_id, args.model, chk(artifact))
+                res = evaluate(t, artifact, args.model, lint)
                 rec = {
-                    "protocol": PROTOCOL_VERSION, "ts": time.time(), "epoch": epoch,
+                    "protocol": PROTOCOL_VERSION, "linted": lint, "ts": time.time(), "epoch": epoch,
                     "task_id": t.task_id, "model": args.model, "error": gen.error,
                     "passed": res.passed, "score": res.score, "rubric": res.rubric_scores,
                     "failed_checks": res.failed_checks, "failure_patterns": res.failure_patterns,
@@ -68,11 +78,14 @@ def main(argv=None) -> int:
     p.add_argument("--tasks", default=str(DEFAULT_TASK_ROOT))
     sub = p.add_subparsers(dest="cmd", required=True)
     sub.add_parser("list").set_defaults(fn=cmd_list)
-    sub.add_parser("validate").set_defaults(fn=cmd_validate)
+    v = sub.add_parser("validate")
+    v.add_argument("--no-lint", action="store_true")
+    v.set_defaults(fn=cmd_validate)
     r = sub.add_parser("run")
     r.add_argument("--model", default="sonnet")
     r.add_argument("--epochs", type=int, default=1)
     r.add_argument("--task", action="append")
+    r.add_argument("--no-lint", action="store_true")
     r.add_argument("--out", default="results/runs.jsonl")
     r.set_defaults(fn=cmd_run)
     args = p.parse_args(argv)

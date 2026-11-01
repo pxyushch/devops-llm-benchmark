@@ -13,3 +13,4 @@ prompt: |
 artifact_type: "dockerfile"
 created: "2026-06-01"
 split: "dev"
+linters: ["hadolint"]
