@@ -1,0 +1,7 @@
+FROM python:latest
+RUN apt-get update && apt-get install -y build-essential curl
+WORKDIR /app
+COPY . .
+RUN pip install -r requirements.txt
+EXPOSE 8000
+CMD ["python", "app.py"]

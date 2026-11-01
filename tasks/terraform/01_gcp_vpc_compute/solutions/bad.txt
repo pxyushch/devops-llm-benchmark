@@ -1,0 +1,20 @@
+resource "google_compute_network" "vpc" {
+  name = "prod-vpc"
+}
+
+resource "google_compute_subnetwork" "a" {
+  name          = "a"
+  region        = "us-central1"
+  ip_cidr_range = "10.0.0.0/24"
+  network       = "prod-vpc"
+}
+
+resource "google_compute_firewall" "ssh" {
+  name          = "ssh"
+  network       = "prod-vpc"
+  source_ranges = ["0.0.0.0/0"]
+  allow {
+    protocol = "tcp"
+    ports    = ["22"]
+  }
+}

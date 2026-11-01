@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: checkout}
+spec:
+  selector: {matchLabels: {app: checkout}}
+  template:
+    metadata: {labels: {app: checkout}}
+    spec:
+      containers:
+        - name: checkout
+          image: checkout:latest
+          securityContext: {privileged: true}
+---
+apiVersion: autoscaling/v2beta1
+kind: HorizontalPodAutoscaler
+metadata: {name: checkout}
+spec:
+  scaleTargetRef: {kind: Deployment, name: checkout}
+  minReplicas: 1
+  maxReplicas: 5
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata: {name: allow}
+spec:
+  podSelector: {}
+  ingress:
+    - from: [{ipBlock: {cidr: 0.0.0.0/0}}]

@@ -10,3 +10,6 @@ prompt: |
   3. Ensure final image contains no build-essential or compiler artifacts.
   4. Expose port 8000 and configure a robust HEALTHCHECK.
   5. Use dumb-init or gunicorn as PID 1 supervisor.
+artifact_type: "dockerfile"
+created: "2026-06-01"
+split: "dev"

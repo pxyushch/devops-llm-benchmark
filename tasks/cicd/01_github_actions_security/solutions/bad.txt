@@ -1,0 +1,12 @@
+name: ci
+on: [push, pull_request_target]
+permissions: write-all
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: [3.10, 3.11, 3.12]
+    steps:
+      - uses: actions/checkout@main
+      - run: pip install bandit && bandit -r .

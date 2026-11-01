@@ -8,3 +8,6 @@ prompt: |
   2. Two private subnets across us-central1 and us-east1 with Private Google Access enabled.
   3. Cloud NAT gateway configured for outbound egress without public IPs.
   4. Firewall rule denying all ingress except SSH from a specific bastion IP range.
+artifact_type: "hcl"
+created: "2026-06-01"
+split: "dev"

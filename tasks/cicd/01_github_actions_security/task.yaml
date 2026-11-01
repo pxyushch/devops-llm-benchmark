@@ -8,3 +8,6 @@ prompt: |
   2. Security linting with Bandit and container scanning with Trivy.
   3. Automatic release artifact packaging on semantic version tags only.
   4. Least-privilege permissions: block with 'contents: read'.
+artifact_type: "yaml"
+created: "2026-06-01"
+split: "dev"
